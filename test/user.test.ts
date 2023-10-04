@@ -4,12 +4,12 @@ import { logger } from "../src/app/logger";
 import { removeTestUser } from "./test-util";
 // import bcrypt from "bcrypt";
 import path from 'path';
-
+import fs from "fs";
 describe('POST /api/users/register', function() {
 
-    // afterEach(async() => {
-    //     await removeTestUser();
-    // });
+    afterEach(async() => {
+        await removeTestUser();
+    });
 
     it('should can register new user', async() => {
         
@@ -31,27 +31,31 @@ describe('POST /api/users/register', function() {
         expect(result.body.data.first_name).toBe('test');
         expect(result.body.data.last_name).toBe('test');
     });
-
-    // it('should can register new user with image', async() => {
-
-    //     const image = path.resolve(__dirname, '../public/test_upload/image.jpg');
+    
+    it('should can register with image', async() => {
+        let image = path.resolve(__dirname, `../public/test_upload/image.jpg`);
         
-    //     const result = await supertest(web)
-    //     .post('/api/users/register')
-    //     .set('content-type', 'application/octet-stream')
-    //     .attach('image', image)
-    //     .field('username', 'test')
-    //     .field('password', 'test')
-    //     .field('first_name', 'test')
-    //     .field('last_name', 'test')
-    //     .field('email', 'test@tes.cc');
+        const result = await supertest(web)
+        .post('/api/users/register')
+        .set('content-type', 'application/octet-stream')
+        .attach('image', image)
+        .field('username', 'test')
+        .field('password', 'test')
+        .field('first_name', 'test')
+        .field('last_name', 'test')
+        .field('email', 'test@tes.cc');
         
 
-    //     logger.info(result);
+        logger.info(result.body);
+        
+        expect(result.status).toBe(201);
+        expect(result.body.data.username).toBe('test');
+        expect(result.body.data.first_name).toBe('test');
+        expect(result.body.data.last_name).toBe('test');
+        image = path.resolve(__dirname, `../public/upload/${result.body.data.image}`);
+        if(fs.existsSync(image)){
+            fs.unlinkSync(image)
+        }
+    });
 
-    //     expect(result.status).toBe(201);
-    //     expect(result.body.data.username).toBe('test');
-    //     expect(result.body.data.first_name).toBe('test');
-    //     expect(result.body.data.last_name).toBe('test');
-    // });
 });

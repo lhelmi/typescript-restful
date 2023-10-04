@@ -7,7 +7,7 @@ const registerValidation = Joi.object({
     last_name : Joi.string().max(100).required(),
     password : Joi.string().max(100).required(),
     token : Joi.string().max(100).allow('', null),
-    image : Joi.string().max(100).default('')
+    image : Joi.string().max(100).default('').allow('', null)
 });
 
 export {

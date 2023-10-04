@@ -4,13 +4,12 @@ import { registerValidation } from "../validation/user-validation";
 import { validate } from "../validation/validation";
 import bcrypt from "bcrypt";
 import { UserRepository } from "./UserRepository";
-import { Prisma } from "@prisma/client";
 import { RegisterResponse } from "../error/response";
 
 class UserRespositoryImp implements UserRepository{
     
-    async save(user: Prisma.UserCreateInput): Promise<RegisterResponse> {
-        validate(registerValidation, user);
+    async save(req: Request): Promise<RegisterResponse> {
+        const user = validate(registerValidation, req);
         
         const countUser = await prismaClient.user.count({
             where : {
@@ -26,7 +25,8 @@ class UserRespositoryImp implements UserRepository{
                 username : true,
                 first_name : true,
                 last_name : true,
-                email : true
+                email : true,
+                image: true
             }
         });
     }
