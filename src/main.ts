@@ -1,6 +1,7 @@
 import { web } from "./app/web";
 import { logger } from "./app/logger";
+import  config from './config/config';
 
-web.listen(3000, () => {
+web.listen(config.serverPort, () => {
     logger.info("app start");
 });
