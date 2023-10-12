@@ -1,6 +1,6 @@
 import supertest from "supertest";
-import { web } from "../src/app/web";
-import { logger } from "../src/app/logger";
+import { web } from "../src/app/Web";
+import { logger } from "../src/app/Logger";
 import { removeTestUser } from "./test-util";
 import mongoose from "mongoose";
 

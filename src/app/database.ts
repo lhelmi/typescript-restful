@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import config from '../config/config';
-import { ResponseError } from "../error/response-error";
+import config from '../config/Config';
+import { ResponseError } from "../error/ResponseError";
 
 
 (async () => {

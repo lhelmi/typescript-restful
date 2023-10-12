@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { ResponseError } from "../error/response-error"
+import { ResponseError } from "../error/ResponseError"
 
 const errorMiddleware = async (err : Error, req : Request, res : Response, next:NextFunction) => {
 

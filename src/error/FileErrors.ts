@@ -1,6 +1,6 @@
 import multer from 'multer';
 import os from 'os';
-import { ResponseError } from './response-error';
+import { ResponseError } from './ResponseError';
 
 export const imageFilter = (req:any, file:any, cb:any) => {
     if(!file.originalname.match(/\.(jpg|jpeg|png)$/)){

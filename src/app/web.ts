@@ -1,6 +1,6 @@
 import express from "express";
-import { publicRouter } from "../route/public-api";
-import { errorMiddleware } from "../middleware/error-middleware";
+import { publicRouter } from "../route/PublicApi";
+import { errorMiddleware } from "../middleware/ErrorMiddleware";
 import cors  from 'cors';
 import { db } from "./database";
 
