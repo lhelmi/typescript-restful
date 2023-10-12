@@ -1,9 +1,13 @@
-import express from 'express';
-import userController from '../controller/user-controller';
-import { upload } from '../error/file-errors';
+import express, { NextFunction, Request, Response } from 'express';
+import { UserController } from '../controller/UserController';
+import UserRespositoryImp from '../repository/UserRespositoryImp';
 
 const publicRouter = express.Router();
-publicRouter.post('/api/users/register', upload.single('image'), userController.register);
+const controller = new UserController(UserRespositoryImp);
+
+publicRouter.post('/api/users/register', (req, res, next) => {
+    controller.register(req, res, next);
+});
 
 export {
     publicRouter

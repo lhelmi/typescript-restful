@@ -1,40 +1,14 @@
-import { PrismaClient } from "@prisma/client";
-import { logger } from "./logger";
-
-export const prismaClient = new PrismaClient({
-    log : [
-        {
-            emit : 'event',
-            level : 'query'
-        },
-        {
-            emit : 'event',
-            level : 'error'
-        },
-        {
-            emit : 'event',
-            level : 'info'
-        },
-        {
-            emit : 'event',
-            level : 'warn'
-        },
-    ]
-});
+import mongoose from "mongoose";
+import config from '../config/config';
+import { ResponseError } from "../error/response-error";
 
 
-prismaClient.$on('error', (e:object) => {
-    logger.error(e)
-});
+(async () => {
+    try {
+        await mongoose.connect(`mongodb://${config.dbUser}:${config.dbPass}@${config.dbHost}:${config.dbPort}/${config.dbName}?authSource=admin`);
+    } catch (err) {
+        throw new ResponseError(500, "DB not connected");
+    }
+})()
 
-prismaClient.$on('info', (e:object) => {
-    logger.info(e)
-});
-
-prismaClient.$on('warn', (e:object) => {
-    logger.warn(e)
-});
-
-prismaClient.$on('query', (e:object) => {
-    logger.info(e)
-});
+export const db = mongoose.connection;

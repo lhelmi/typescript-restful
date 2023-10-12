@@ -1,10 +1,8 @@
-import { prismaClient } from "../src/app/database";
+import { User } from "../src/model/User";
 
 const removeTestUser = async() => {
-    await prismaClient.user.deleteMany({
-        where : {
-            username : 'test'
-        }
+    await User.findOneAndDelete({
+        email : 'test@tes.cc'
     });
 }
 

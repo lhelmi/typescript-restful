@@ -2,13 +2,17 @@ import supertest from "supertest";
 import { web } from "../src/app/web";
 import { logger } from "../src/app/logger";
 import { removeTestUser } from "./test-util";
-// import bcrypt from "bcrypt";
-import path from 'path';
-import fs from "fs";
+import mongoose from "mongoose";
+
 describe('POST /api/users/register', function() {
+
+    beforeEach(async() => {
+        
+    });
 
     afterEach(async() => {
         await removeTestUser();
+        await mongoose.disconnect();
     });
 
     it('should can register new user', async() => {
@@ -16,46 +20,18 @@ describe('POST /api/users/register', function() {
         const result = await supertest(web)
         .post('/api/users/register')
         .send({
-            username : 'test',
-            password : 'test',
-            first_name : 'test',
-            last_name : 'test',
-            email : 'test@tes.cc'
+            full_name : 'test',
+            customer_id : 20,
+            email : 'test@tes.cc',
+            password : 'test'
         });
         
-
         logger.info(result.body);
 
         expect(result.status).toBe(201);
-        expect(result.body.data.username).toBe('test');
-        expect(result.body.data.first_name).toBe('test');
-        expect(result.body.data.last_name).toBe('test');
-    });
-    
-    it('should can register with image', async() => {
-        let image = path.resolve(__dirname, `../public/test_upload/image.jpg`);
-        
-        const result = await supertest(web)
-        .post('/api/users/register')
-        .set('content-type', 'application/octet-stream')
-        .attach('image', image)
-        .field('username', 'test')
-        .field('password', 'test')
-        .field('first_name', 'test')
-        .field('last_name', 'test')
-        .field('email', 'test@tes.cc');
-        
-
-        logger.info(result.body);
-        
-        expect(result.status).toBe(201);
-        expect(result.body.data.username).toBe('test');
-        expect(result.body.data.first_name).toBe('test');
-        expect(result.body.data.last_name).toBe('test');
-        image = path.resolve(__dirname, `../public/upload/${result.body.data.image}`);
-        if(fs.existsSync(image)){
-            fs.unlinkSync(image)
-        }
+        expect(result.body.data.full_name).toBe('test');
+        expect(result.body.data.email).toBe('test@tes.cc');
+        expect(result.body.data.customer_id).toBe(20);
     });
 
 });

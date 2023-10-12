@@ -1,5 +1,5 @@
-import { RegisterResponse } from "../error/response";
+import { IUser } from "../entity/User";
 
 export interface UserRepository {
-    save(req: Request): Promise<RegisterResponse>;
+    save(user:IUser): Promise<IUser>;
 }
