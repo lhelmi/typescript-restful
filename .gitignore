@@ -3,3 +3,4 @@ public/test_upload
 public/upload
 # Keep environment variables out of version control
 .env
+build
