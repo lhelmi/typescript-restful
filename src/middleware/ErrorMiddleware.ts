@@ -1,17 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { ResponseError } from "../error/ResponseError"
+import { Error } from "mongoose";
 
-// class ValidationError extends Error {
-//     status: number;
-//     errors:string[];
-//     constructor(status:number, message : string, errors:string[]){
-//         super(message);
-//         this.status = status;
-//         this.errors = errors;
-//     }
-// }
 
-const errorMiddleware = async (err:any, req : Request, res : Response, next:NextFunction) => {
+const errorMiddleware = async (err:Error, req : Request, res : Response, next:NextFunction) => {
 
     if(!err){
         next();
@@ -22,7 +14,7 @@ const errorMiddleware = async (err:any, req : Request, res : Response, next:Next
         return res.status(err.status).json({
             errors : err.message
         }).end();
-    }else if(err && err.name === 'ValidationError'){
+    }else if(err instanceof Error.ValidationError){
         return res.status(400).json({
             errors : err.message,
             field : err.errors

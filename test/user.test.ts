@@ -41,7 +41,8 @@ describe('POST /api/users/register', function() {
         .send({
             full_name : 'test',
             customer_id : 20,
-            email : 'testtes.cc', //the error
+            // email : 'testtes.cc', //the error
+            email : 'gold@go.ld', //the error : duplicate email account
             password : 'test'
         });
         
