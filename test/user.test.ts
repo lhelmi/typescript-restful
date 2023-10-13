@@ -4,15 +4,11 @@ import { logger } from "../src/app/Logger";
 import { createUserTest, removeTestUser, getUserTest } from "./TestUtil";
 import mongoose from "mongoose";
 import config from "../src/config/Config";
-import jwt from 'jsonwebtoken';
 
-describe('POST /api/users', function() {
+describe('POST /api/users/register', function() {
     
     beforeEach(async() => {
         await mongoose.connect(`mongodb://${config.dbUser}:${config.dbPass}@${config.dbHost}:${config.dbPort}/${config.dbName}?authSource=admin`);
-        await createUserTest();
-        // let user = await getUserTest();
-        // let signed = jwt.sign(user, config.jwtSecretKey as string);
     });
 
     afterEach(async() => {
@@ -100,6 +96,20 @@ describe('POST /api/users', function() {
         
     });
 
+});
+
+describe('POST /api/users/login', function() {
+    
+    beforeEach(async() => {
+        await mongoose.connect(`mongodb://${config.dbUser}:${config.dbPass}@${config.dbHost}:${config.dbPort}/${config.dbName}?authSource=admin`);
+        await createUserTest();
+    });
+
+    afterEach(async() => {
+        await removeTestUser();
+        await mongoose.disconnect();
+    });
+
     it('should can login', async() => {
         
         const result = await supertest(web)
@@ -114,4 +124,71 @@ describe('POST /api/users', function() {
         expect(result.status).toBe(200);
     });
 
+    it('should login is invalid : wrong email', async() => {
+        
+        const result = await supertest(web)
+        .post('/api/users/login')
+        .send({
+            email : 'testtes.cc',
+            password : 'test'
+        });
+        
+        logger.info(result.body);
+
+        expect(result.status).toBe(404);
+        expect(result.body.errors).toBeDefined();
+    });
+
+    it('should login is invalid : wrong password', async() => {
+        
+        const result = await supertest(web)
+        .post('/api/users/login')
+        .send({
+            email : 'test@tes.cc',
+            password : 'testxx'
+        });
+        
+        logger.info(result.body);
+
+        expect(result.status).toBe(401);
+        expect(result.body.errors).toBeDefined();
+    });
+
+});
+
+describe('POST /api/users/current', function() {
+    beforeEach(async() => {
+        await mongoose.connect(`mongodb://${config.dbUser}:${config.dbPass}@${config.dbHost}:${config.dbPort}/${config.dbName}?authSource=admin`);
+        await createUserTest();
+    });
+
+    afterEach(async() => {
+        await removeTestUser();
+        await mongoose.disconnect();
+    });
+
+    it('should can get current user data', async() => {
+        const resultLog = await supertest(web)
+        .post('/api/users/login')
+        .send({
+            email : 'test@tes.cc',
+            password : 'test'
+        });
+        
+        expect(resultLog.status).toBe(200);
+        expect(resultLog.body.data.token).toBeDefined();
+
+        const token = resultLog.body.data.token;
+        
+        const result = await supertest(web)
+        .get('/api/users/current')
+        .set("Authorization", token);
+        
+        logger.info(result.body);
+
+        expect(result.status).toBe(200);
+        expect(result.body.data.email).toBeDefined();
+        expect(result.body.data.full_name).toBeDefined();
+        expect(result.body.data.password).toBeDefined();
+    });
 });

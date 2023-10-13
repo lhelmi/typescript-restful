@@ -11,7 +11,7 @@ class UserLoginRepositoryImp implements AuthRepository{
         const user = await this.get(email);
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if(!isPasswordValid) throw new ResponseError(401, "username or password wrong");
-        const signed = jwt.sign(JSON.stringify(user), Config.jwtSecretKey as string);
+        const signed = jwt.sign(JSON. stringify(user), Config.jwtSecretKey as string);
         user.token?.push(signed);
         await User.findOneAndUpdate(
             {
@@ -30,7 +30,9 @@ class UserLoginRepositoryImp implements AuthRepository{
         return user;
     }
 
-    async get(email:string): Promise<IUser> {
+    async get(email?:string): Promise<IUser> {
+        if(!email) throw new ResponseError(400, 'Email is invalid!')
+
         const result = await User.findOne(
             {
                 email : email
@@ -40,6 +42,15 @@ class UserLoginRepositoryImp implements AuthRepository{
         if(!result) throw new ResponseError(404, 'User not found');
 
         return result;
+    }
+
+    async save(value: IUser): Promise<IUser> {
+        const data = new User(value);
+        return await data.save();
+    }
+
+    update(user: IUser, id: string): Promise<IUser> {
+        throw new Error("Method not implemented.");
     }
     
 }
