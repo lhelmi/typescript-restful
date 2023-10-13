@@ -1,6 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { IUser } from "../entity/User";
 import { UserRepository } from "../repository/UserRepository";
+import jwt from 'jsonwebtoken';
+import Config from "../config/Config";
+import { User } from "../model/User";
 
 export class UserController {
 
@@ -19,11 +22,24 @@ export class UserController {
             user.customer_id = payload.customer_id;
             user.email = payload.email;
             user.password = payload.password;
+            
             const result = await this.repository.save(user);
-
+            
             return res.status(201).json({
                 data : result,
                 message : 'Created'
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async get(req:Request, res:Response, next:NextFunction):Promise<any>{
+        try {
+            const email = req.user?.email;
+            res.status(200).json({
+                data : email,
+                message : 'Ok'
             });
         } catch (error) {
             next(error);

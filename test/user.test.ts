@@ -1,14 +1,18 @@
 import supertest from "supertest";
 import { web } from "../src/app/Web";
 import { logger } from "../src/app/Logger";
-import { removeTestUser } from "./TestUtil";
+import { createUserTest, removeTestUser, getUserTest } from "./TestUtil";
 import mongoose from "mongoose";
 import config from "../src/config/Config";
+import jwt from 'jsonwebtoken';
 
-describe('POST /api/users/register', function() {
-
+describe('POST /api/users', function() {
+    
     beforeEach(async() => {
         await mongoose.connect(`mongodb://${config.dbUser}:${config.dbPass}@${config.dbHost}:${config.dbPort}/${config.dbName}?authSource=admin`);
+        await createUserTest();
+        // let user = await getUserTest();
+        // let signed = jwt.sign(user, config.jwtSecretKey as string);
     });
 
     afterEach(async() => {
@@ -94,6 +98,20 @@ describe('POST /api/users/register', function() {
         expect(result.body.field).toBeDefined;
         expect(result.body.field.email).toBeDefined;
         
+    });
+
+    it('should can login', async() => {
+        
+        const result = await supertest(web)
+        .post('/api/users/login')
+        .send({
+            email : 'test@tes.cc',
+            password : 'test'
+        });
+        
+        logger.info(result.body);
+
+        expect(result.status).toBe(200);
     });
 
 });
