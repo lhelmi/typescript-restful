@@ -21,8 +21,8 @@ export class TokenMiddleware{
             const token = getToken(req);
             if(!token) throw new ResponseError(401, "UNAUTHORIZED");
 
-            console.log('isvalid');
             const isValid = jwt.verify(token, config.jwtSecretKey as string);
+            
             if(!isValid) throw new ResponseError(401, "UNAUTHORIZED");
             console.log('lewat isvalid');
             const user = await User.findOne({

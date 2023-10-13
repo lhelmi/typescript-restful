@@ -191,4 +191,44 @@ describe('POST /api/users/current', function() {
         expect(result.body.data.full_name).toBeDefined();
         expect(result.body.data.password).toBeDefined();
     });
+
+    it('should be rejected : token is malformat', async() => {
+        const resultLog = await supertest(web)
+        .post('/api/users/login')
+        .send({
+            email : 'test@tes.cc',
+            password : 'test'
+        });
+        
+        expect(resultLog.status).toBe(200);
+        expect(resultLog.body.data.token).toBeDefined();
+
+        const result = await supertest(web)
+        .get('/api/users/current')
+        .set("Authorization", 'kajsdhajshdjsa12312asddasjldjlasdj');
+        
+        logger.info(result.body);
+
+        expect(result.status).toBe(401);
+    });
+
+    it('should be rejected : invalid token', async() => {
+        const resultLog = await supertest(web)
+        .post('/api/users/login')
+        .send({
+            email : 'test@tes.cc',
+            password : 'test'
+        });
+        
+        expect(resultLog.status).toBe(200);
+        expect(resultLog.body.data.token).toBeDefined();
+
+        const result = await supertest(web)
+        .get('/api/users/current')
+        .set("Authorization", 'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NGNjOWFiMzE3ZTI4ZWZhM2NmM2Y2MzQiLCJmdWxsX25hbWUiOiJnb2xkIiwiY3VzdG9tZXJfaWQiOjE5LCJlbWFpbCI6ImdvbGRAZ28ubGQiLCJyb2xlIjoidXNlciIsImNyZWF0ZWRBdCI6IjIwMjMtMDgtMDRUMDY6Mjk6MDcuNDk1WiIsInVwZGF0ZWRBdCI6IjIwMjMtMDgtMDRUMDY6Mjk6MDcuNDk1WiIsImlhdCI6MTY5MTEzMDU1MX0.OIZesNINEXgQ5yBYKH9LRYmEdZ6YTFteTri0Mz--fmQ');
+        
+        logger.info(result.body);
+
+        expect(result.status).toBe(498);
+    });
 });

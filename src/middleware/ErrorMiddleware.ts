@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { ResponseError } from "../error/ResponseError"
 import { Error } from "mongoose";
-
+import { JsonWebTokenError } from "jsonwebtoken";
+import { JwtStatusCode } from "../utils/JwtStatusCode";
 
 const errorMiddleware = async (err:Error, req : Request, res : Response, next:NextFunction) => {
 
@@ -18,6 +19,12 @@ const errorMiddleware = async (err:Error, req : Request, res : Response, next:Ne
         return res.status(400).json({
             errors : err.message,
             field : err.errors
+        }).end();
+    }else if(err instanceof JsonWebTokenError){
+        let status = JwtStatusCode(err.message);
+
+        return res.status(status).json({
+            errors : err.message,
         }).end();
     }else{
         return res.status(500).json({
