@@ -1,10 +1,10 @@
 import express from "express";
-import { publicRouter } from "../route/PublicApi";
-import { errorMiddleware } from "../middleware/ErrorMiddleware";
+import { PublicRouter } from "../route/PublicApi";
 import cors  from 'cors';
 import { db } from "./database";
-import { TokenMiddleware } from "../middleware/TokenMiddleware";
+import ErrorMiddleware from "../middleware/ErrorMiddleware";
 import { AuthRouter } from "../route/AuthRouter";
+// import { AuthRouter } from "../route/AuthRouter";
 
 db.once('open', () => {
     console.log('server connect');
@@ -13,6 +13,7 @@ db.once('open', () => {
 export const web = express();
 web.use(cors());
 web.use(express.json());
-web.use(publicRouter);
-web.use(AuthRouter);
-web.use(errorMiddleware);
+web.use(new PublicRouter().router);
+web.use(new AuthRouter().router);
+// web.use(AuthRouter);
+web.use(ErrorMiddleware.get);

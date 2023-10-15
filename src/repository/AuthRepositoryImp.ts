@@ -6,7 +6,8 @@ import jwt from 'jsonwebtoken';
 import Config from "../config/Config";
 import bcrypt from 'bcrypt';
 
-class UserLoginRepositoryImp implements AuthRepository{
+export class AuthRepositoryImp implements AuthRepository{
+    
     async login(email: string, password:string): Promise<IUser> {
         const user = await this.get(email);
         const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -54,5 +55,3 @@ class UserLoginRepositoryImp implements AuthRepository{
     }
     
 }
-
-export default new UserLoginRepositoryImp

@@ -179,6 +179,7 @@ describe('POST /api/users/current', function() {
         expect(resultLog.body.data.token).toBeDefined();
 
         const token = resultLog.body.data.token;
+        console.log(token);
         
         const result = await supertest(web)
         .get('/api/users/current')

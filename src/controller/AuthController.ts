@@ -1,13 +1,16 @@
 import { NextFunction, Request, Response } from "express";
 import { AuthRepository } from "../repository/AuthRepository";
 import { IUser } from "../entity/User";
+import { Controller } from "./Controller";
+import {AuthRepositoryImp} from "../repository/AuthRepositoryImp";
 
-export class AuthController {
+export class AuthController extends Controller {
 
     private repository:AuthRepository;
 
-    constructor(repository: AuthRepository){
-        this.repository = repository;
+    constructor(){
+        super();
+        this.repository = new AuthRepositoryImp();
     }
 
     async login(req:Request, res:Response, next:NextFunction):Promise<any>{
@@ -32,7 +35,7 @@ export class AuthController {
             user.customer_id = payload.customer_id;
             user.email = payload.email;
             user.password = payload.password;
-            
+            console.log('this.repository');
             const result = await this.repository.save(user);
             
             return res.status(201).json({
