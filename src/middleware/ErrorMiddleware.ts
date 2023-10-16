@@ -25,7 +25,13 @@ class ErrorMiddleware{
             return res.status(status).json({
                 errors : err.message,
             }).end();
+        
         }else{
+            if (err.message == 'Not Found'){
+                return res.status(404).json({
+                    errors : err.message
+                }).end();    
+            }
             return res.status(500).json({
                 errors : err.message
             }).end();

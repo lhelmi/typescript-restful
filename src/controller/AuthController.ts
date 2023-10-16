@@ -35,7 +35,6 @@ export class AuthController extends Controller {
             user.customer_id = payload.customer_id;
             user.email = payload.email;
             user.password = payload.password;
-            console.log('this.repository');
             const result = await this.repository.save(user);
             
             return res.status(201).json({

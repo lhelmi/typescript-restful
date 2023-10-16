@@ -213,6 +213,16 @@ describe('POST /api/users/current', function() {
         expect(result.status).toBe(401);
     });
 
+    it('should be rejected : UNAUTHORIZED', async() => {
+        const result = await supertest(web)
+        .get('/api/users/current');
+        
+        
+        logger.info(result.body);
+
+        expect(result.status).toBe(401);
+    });
+
     it('should be rejected : invalid token', async() => {
         const resultLog = await supertest(web)
         .post('/api/users/login')

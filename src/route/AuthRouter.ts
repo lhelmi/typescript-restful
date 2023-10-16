@@ -6,18 +6,17 @@ import { AuthController } from '../controller/AuthController';
 export class AuthRouter {
     public router:Router;
     private controller;
-    private tokenMiddleware;
+    private auth;
 
     constructor(){
         this.router = express.Router();
-        this.tokenMiddleware = new TokenMiddleware();
-        this.router.use(this.tokenMiddleware.decode);
+        this.auth = new TokenMiddleware().decode;
         this.controller = new AuthController();
         this.authRouter();
     }
 
     protected authRouter():void{
-        this.router.get('/api/users/current', (req, res, next) => {
+        this.router.get('/api/users/current', this.auth, (req, res, next) => {
             this.controller.get(req, res, next);
         });
     }
