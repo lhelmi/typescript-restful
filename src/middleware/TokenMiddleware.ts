@@ -9,7 +9,7 @@ import AuthToken from "../utils/AuthToken";
 declare global {
     namespace Express {
         interface Request {
-            user? : IUser
+            user : IUser
             // user? : Record<string, any>
         }
     }
