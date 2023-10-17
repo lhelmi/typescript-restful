@@ -299,3 +299,75 @@ describe('GET /api/users/logout', function() {
         expect(result.status).toBe(401);
     });
 });
+
+describe('GET /api/users/:id', function() {
+    beforeEach(async() => {
+        await mongoose.connect(`mongodb://${config.dbUser}:${config.dbPass}@${config.dbHost}:${config.dbPort}/${config.dbName}?authSource=admin`);
+        await createUserTest();
+    });
+
+    afterEach(async() => {
+        await removeTestUser();
+        await mongoose.disconnect();
+    });
+
+    it('should can update user', async() => {
+        const resultLog = await supertest(web)
+        .post('/api/users/login')
+        .send({
+            email : 'test@tes.cc',
+            password : 'test'
+        });
+        
+        expect(resultLog.status).toBe(200);
+        expect(resultLog.body.data.token).toBeDefined();
+
+        const token = resultLog.body.data.token;
+        const id = resultLog.body.data._id;
+        
+        const result = await supertest(web)
+        .put(`/api/users/${id}`)
+        .set("Authorization", token)
+        .send({
+            full_name : 'test1',
+            email : 'test1@tes.cc',
+            password : 'test1'
+        });
+        
+        logger.info(result.body);
+
+        expect(result.status).toBe(200);
+        expect(result.body.data).toBeDefined();
+        expect(result.body.data.full_name).toBe('test1');
+        expect(result.body.data.email).toBe('test1@tes.cc');
+    });
+
+    it('should reject : email is invalid', async() => {
+        const resultLog = await supertest(web)
+        .post('/api/users/login')
+        .send({
+            email : 'test@tes.cc',
+            password : 'test'
+        });
+        
+        expect(resultLog.status).toBe(200);
+        expect(resultLog.body.data.token).toBeDefined();
+
+        const token = resultLog.body.data.token;
+        const id = resultLog.body.data._id;
+        
+        const result = await supertest(web)
+        .put(`/api/users/${id}`)
+        .set("Authorization", token)
+        .send({
+            full_name : 'test1',
+            email : 'test1tes.cc',
+            password : 'test1'
+        });
+        
+        logger.info(result.body);
+
+        expect(result.status).toBe(400);
+        expect(result.body.errors).toBeDefined();
+    });
+});

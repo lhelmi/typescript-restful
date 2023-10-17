@@ -23,6 +23,10 @@ export class AuthRouter {
         this.router.get('/api/users/logout', this.auth, (req, res, next) => {
             this.controller.logout(req, res, next);
         });
+
+        this.router.put('/api/users/:id', this.auth, (req, res, next) => {
+            this.controller.update(req, res, next);
+        });
     }
 
 }

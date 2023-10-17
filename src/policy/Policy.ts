@@ -17,6 +17,7 @@ export class Policy{
     defineAbilitiesFor() {
         const { can, cannot, build } = new AbilityBuilder(createMongoAbility);
         can('read', 'User');
+        can('update', 'User', {user_id : this.user._id});
         return build();
     }
 

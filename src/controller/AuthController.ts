@@ -48,6 +48,30 @@ export class AuthController extends Controller {
         }
     }
 
+    async update(req:Request, res:Response, next:NextFunction):Promise<any>{
+        try {
+            (new Policy(req.user, 'update', 'User').checkAbillities());
+
+            const payload = req.body;
+            const id = req.params.id;
+            const user = new IUser();
+            user.full_name = payload.full_name;
+            user.email = payload.email;
+            user.password = payload.password;
+            
+            console.log(id);
+            const result = await this.repository.update(user, id);
+            
+            return res.status(200).json({
+                data : result,
+                message : 'Updated'
+            });
+        
+        } catch (error) {
+            next(error);
+        }
+    }
+
     async get(req:Request, res:Response, next:NextFunction):Promise<any>{
         try {
             (new Policy(req.user, 'read', 'User').checkAbillities());

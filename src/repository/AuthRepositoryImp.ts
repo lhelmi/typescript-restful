@@ -49,8 +49,21 @@ export class AuthRepositoryImp implements AuthRepository{
         return await data.save();
     }
 
-    update(user: IUser, id: string): Promise<IUser> {
-        throw new Error("Method not implemented.");
+    async update(user: IUser, id: string): Promise<IUser> {
+        const result = await User.findOneAndUpdate(
+            { _id : id },
+            user,
+            {
+                new: true,
+                runValidators : true
+            }
+        );
+
+        if(!result){
+            throw new ResponseError(404, "User not found");
+        }
+
+        return result;
     }
 
     async updateToken(token: string | null): Promise<IUser> {
