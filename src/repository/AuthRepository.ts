@@ -5,4 +5,5 @@ export interface AuthRepository {
     save(user:IUser): Promise<IUser>;
     get(email?:String): Promise<IUser>;
     update(user:IUser, id:string): Promise<IUser>;
+    updateToken(token:string | null): Promise<IUser>;
 }

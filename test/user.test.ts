@@ -156,7 +156,7 @@ describe('POST /api/users/login', function() {
 
 });
 
-describe('POST /api/users/current', function() {
+describe('GET /api/users/current', function() {
     beforeEach(async() => {
         await mongoose.connect(`mongodb://${config.dbUser}:${config.dbPass}@${config.dbHost}:${config.dbPort}/${config.dbName}?authSource=admin`);
         await createUserTest();
@@ -240,5 +240,62 @@ describe('POST /api/users/current', function() {
         logger.info(result.body);
 
         expect(result.status).toBe(498);
+    });
+});
+
+describe('GET /api/users/logout', function() {
+    beforeEach(async() => {
+        await mongoose.connect(`mongodb://${config.dbUser}:${config.dbPass}@${config.dbHost}:${config.dbPort}/${config.dbName}?authSource=admin`);
+        await createUserTest();
+    });
+
+    afterEach(async() => {
+        await removeTestUser();
+        await mongoose.disconnect();
+    });
+
+    it('should can logout', async() => {
+        const resultLog = await supertest(web)
+        .post('/api/users/login')
+        .send({
+            email : 'test@tes.cc',
+            password : 'test'
+        });
+        
+        expect(resultLog.status).toBe(200);
+        expect(resultLog.body.data.token).toBeDefined();
+
+        const token = resultLog.body.data.token;
+        
+        const result = await supertest(web)
+        .get('/api/users/logout')
+        .set("Authorization", token);
+        
+        logger.info(result.body);
+
+        expect(result.status).toBe(200);
+        expect(result.body.data).toBeDefined();
+    });
+
+    it('should logout is reject', async() => {
+        const resultLog = await supertest(web)
+        .post('/api/users/login')
+        .send({
+            email : 'test@tes.cc',
+            password : 'test'
+        });
+        
+        expect(resultLog.status).toBe(200);
+        expect(resultLog.body.data.token).toBeDefined();
+
+        let token = resultLog.body.data.token + 'asdasdsa';
+        
+        const result = await supertest(web)
+        .get('/api/users/logout')
+        .set("Authorization", token);
+        
+        logger.info(result.body);
+
+        expect(result.status).toBe(401);
     });
 });

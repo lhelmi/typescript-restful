@@ -4,6 +4,7 @@ import { IUser } from "../entity/User";
 import { Controller } from "./Controller";
 import {AuthRepositoryImp} from "../repository/AuthRepositoryImp";
 import { Policy } from "../policy/policy";
+import AuthToken from "../utils/AuthToken";
 
 export class AuthController extends Controller {
 
@@ -57,6 +58,20 @@ export class AuthController extends Controller {
             res.status(200).json({
                 data : user,
                 message : 'User data'
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async logout(req:Request, res:Response, next:NextFunction):Promise<any>{
+        try {
+            const token = AuthToken.get(req);
+            await this.repository.updateToken(token);
+
+            res.status(200).json({
+                data : null,
+                message : "successfully logout"
             });
         } catch (error) {
             next(error);

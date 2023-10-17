@@ -19,6 +19,10 @@ export class AuthRouter {
         this.router.get('/api/users/current', this.auth, (req, res, next) => {
             this.controller.get(req, res, next);
         });
+
+        this.router.get('/api/users/logout', this.auth, (req, res, next) => {
+            this.controller.logout(req, res, next);
+        });
     }
 
 }

@@ -7,7 +7,6 @@ import Config from "../config/Config";
 import bcrypt from 'bcrypt';
 
 export class AuthRepositoryImp implements AuthRepository{
-    
     async login(email: string, password:string): Promise<IUser> {
         const user = await this.get(email);
         const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -52,6 +51,27 @@ export class AuthRepositoryImp implements AuthRepository{
 
     update(user: IUser, id: string): Promise<IUser> {
         throw new Error("Method not implemented.");
+    }
+
+    async updateToken(token: string | null): Promise<IUser> {
+        if(!token){
+            throw new ResponseError(404, "User not found");    
+        }
+        const user = await User.findOneAndUpdate({
+            token : {
+                $in : [token]
+            }
+        },{
+            $pull : {token}
+        },{
+            useFindAndMofify:false
+        });
+
+        if(!user){
+            throw new ResponseError(404, "User not found");
+        }
+
+        return user;
     }
     
 }
