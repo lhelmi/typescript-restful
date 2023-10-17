@@ -3,7 +3,7 @@ import { AuthRepository } from "../repository/AuthRepository";
 import { IUser } from "../entity/User";
 import { Controller } from "./Controller";
 import {AuthRepositoryImp} from "../repository/AuthRepositoryImp";
-import Policy from "../policy/Policy";
+import { Policy } from "../policy/policy";
 
 export class AuthController extends Controller {
 
@@ -49,14 +49,7 @@ export class AuthController extends Controller {
 
     async get(req:Request, res:Response, next:NextFunction):Promise<any>{
         try {
-            let policies = Policy.defineAbilitiesFor(req.user);
-            if(!policies.can('read', 'User')){
-                return res.json({
-                    error: 1, 
-                    message: `Anda tidak memiliki akses untuk membuat produk`
-                });
-            }
-            
+            (new Policy(req.user, 'read', 'User').checkAbillities());
             const email = req.user?.email;
 
             const user = await this.repository.get(email);
