@@ -3,8 +3,9 @@ import { AuthRepository } from "../repository/AuthRepository";
 import { IUser } from "../entity/User";
 import { Controller } from "./Controller";
 import {AuthRepositoryImp} from "../repository/AuthRepositoryImp";
-import { Policy } from "../policy/policy";
+import { Policy } from "../policy/Policy";
 import AuthToken from "../utils/AuthToken";
+import { Email } from "../service/Email";
 
 export class AuthController extends Controller {
 
@@ -38,7 +39,14 @@ export class AuthController extends Controller {
             user.email = payload.email;
             user.password = payload.password;
             const result = await this.repository.save(user);
-            
+            const email = new Email();
+            email.to = "lazer.helmi@gmail.com";
+            email.subject = "hehehe";
+            email.from = "20m.helmi@gmail.com";
+            email.text = "dasmndsandmasndlnasldnsadjnsa";
+
+            await email.send();
+
             return res.status(201).json({
                 data : result,
                 message : 'Created'

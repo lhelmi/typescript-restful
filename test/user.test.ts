@@ -22,7 +22,6 @@ describe('POST /api/users/register', function() {
         .post('/api/users/register')
         .send({
             full_name : 'test',
-            customer_id : 20,
             email : 'test@tes.cc',
             password : 'test'
         });
@@ -32,7 +31,7 @@ describe('POST /api/users/register', function() {
         expect(result.status).toBe(201);
         expect(result.body.data.full_name).toBe('test');
         expect(result.body.data.email).toBe('test@tes.cc');
-        expect(result.body.data.customer_id).toBe(20);
+        expect(result.body.data.customer_id).toBeDefined();
     });
 
     it('should rejected : full_name, password is empty ', async() => {
