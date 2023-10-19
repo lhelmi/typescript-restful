@@ -5,7 +5,8 @@ import { Controller } from "./Controller";
 import {AuthRepositoryImp} from "../repository/AuthRepositoryImp";
 import { Policy } from "../policy/Policy";
 import AuthToken from "../utils/AuthToken";
-import { Email } from "../service/Email";
+import { EmailService } from "../service/EmailService";
+import { EmailType } from "../entity/EmailType";
 
 export class AuthController extends Controller {
 
@@ -39,13 +40,24 @@ export class AuthController extends Controller {
             user.email = payload.email;
             user.password = payload.password;
             const result = await this.repository.save(user);
-            const email = new Email();
-            email.to = "lazer.helmi@gmail.com";
-            email.subject = "hehehe";
-            email.from = "20m.helmi@gmail.com";
-            email.text = "dasmndsandmasndlnasldnsadjnsa";
+            
+            const emailParam:EmailType = {
+                to :user.email,
+                subject:"Pendaftaran",
+                from:"hehe@gmail.cc",
+                text:"pendaftaran"
+            }
+            
+            const emailService = new EmailService();
+            emailService.sendNewEmail(emailParam)
+            
+            // const email = new Email();
+            // email.to = "lazer.helmi@gmail.com";
+            // email.subject = "hehehe";
+            // email.from = "20m.helmi@gmail.com";
+            // email.text = "dasmndsandmasndlnasldnsadjnsa";
 
-            await email.send();
+            // console.log(email);
 
             return res.status(201).json({
                 data : result,
@@ -104,6 +116,23 @@ export class AuthController extends Controller {
             res.status(200).json({
                 data : null,
                 message : "successfully logout"
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async resend(req:Request, res:Response, next:NextFunction):Promise<any>{
+        try {
+            
+            const { from, to, subject, text } = req.body;
+            const emailService = new EmailService();
+            
+            await emailService.sendNewEmail({from, to, subject, text});
+            
+            res.status(200).json({
+                data : null,
+                message : "successfully resend"
             });
         } catch (error) {
             next(error);

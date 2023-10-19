@@ -370,3 +370,31 @@ describe('GET /api/users/:id', function() {
         expect(result.body.errors).toBeDefined();
     });
 });
+
+describe('POST /api/users/resend-email', function() {
+    
+    beforeEach(async() => {
+        await mongoose.connect(`mongodb://${config.dbUser}:${config.dbPass}@${config.dbHost}:${config.dbPort}/${config.dbName}?authSource=admin`);
+    });
+
+    afterEach(async() => {
+        await removeTestUser();
+        await mongoose.disconnect();
+    });
+
+    it('should can register new userxxx', async() => {
+        
+        const result = await supertest(web)
+        .post('/api/users/resend-email')
+        .send({
+            to : "lazer.helmi@gmail.com",
+            from : "7m.helmi@gmail.com",
+            subject : "hee",
+            text : "texttt"
+        });
+        
+        logger.info(result.body);
+
+        expect(result.status).toBe(200);
+    });
+});

@@ -15,6 +15,8 @@ class Config{
     dbPass:string = process.env.DB_PASS as string;
     dbName:string = process.env.DB_NAME as string;
     jwtSecretKey :string = process.env.JWTSECRETKEY as string;
+    redisHost:string = process.env.REDIS_HOST as string;
+    redisPort:string = process.env.REDIS_PORT as string;
 }
 
 export default new Config;
