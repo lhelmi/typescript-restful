@@ -17,6 +17,8 @@ class Config{
     jwtSecretKey :string = process.env.JWTSECRETKEY as string;
     redisHost:string = process.env.REDIS_HOST as string;
     redisPort:string = process.env.REDIS_PORT as string;
+    serverPort:string =  process.env.PORT as string;
+    email_from:string = process.env.EMAIL_FROM as string;
 }
 
 export default new Config;

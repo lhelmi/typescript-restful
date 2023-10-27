@@ -8,7 +8,7 @@ import bcrypt from 'bcrypt';
 
 export class AuthRepositoryImp implements AuthRepository{
     async login(email: string, password:string): Promise<IUser> {
-        const user = await this.get(email);
+        const user = await this.getByEmail(email);
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if(!isPasswordValid) throw new ResponseError(401, "username or password wrong");
         const signed = jwt.sign(JSON. stringify(user), Config.jwtSecretKey as string);
@@ -30,9 +30,21 @@ export class AuthRepositoryImp implements AuthRepository{
         return user;
     }
 
-    async get(email?:string): Promise<IUser> {
-        if(!email) throw new ResponseError(400, 'Email is invalid!')
+    async get(id?:string): Promise<IUser> {
+        if(!id) throw new ResponseError(400, 'ID is invalid!')
+        const result = await User.findOne(
+            {
+                _id : id
+            }
+        );
 
+        if(!result) throw new ResponseError(404, 'User not found');
+
+        return result;
+    }
+
+    async getByEmail(email?:string): Promise<IUser> {
+        if(!email) throw new ResponseError(400, 'Email is invalid!')
         const result = await User.findOne(
             {
                 email : email

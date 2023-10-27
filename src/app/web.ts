@@ -4,7 +4,6 @@ import cors  from 'cors';
 import { db } from "./database";
 import ErrorMiddleware from "../middleware/ErrorMiddleware";
 import { AuthRouter } from "../route/AuthRouter";
-import createError from 'http-errors';
 
 db.once('open', () => {
     console.log('server connect');

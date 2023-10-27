@@ -31,7 +31,13 @@ const userSchema = new Schema<IUser>({
         enum: ['user', 'admin'],
         default: 'user'
     },
-    token: [String]
+    token: [String],
+    email_verified_at: {
+        type: Date
+    },
+    remember_token : {
+        type : String
+    } 
 }, {
     timestamps : true
 });

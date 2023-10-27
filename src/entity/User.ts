@@ -6,4 +6,6 @@ export class IUser{
     password!:string;
     role!:string;
     token?:string[];
+    email_verified_at?:Date;
+    remember_token?:string;
 }

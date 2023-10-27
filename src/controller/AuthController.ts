@@ -7,6 +7,9 @@ import { Policy } from "../policy/Policy";
 import AuthToken from "../utils/AuthToken";
 import { EmailService } from "../service/EmailService";
 import { EmailType } from "../entity/EmailType";
+import { v4 as uuid } from "uuid";
+import EmailTemplate from "../utils/template/EmailTemplate";
+import Config from "../config/Config";
 
 export class AuthController extends Controller {
 
@@ -30,35 +33,36 @@ export class AuthController extends Controller {
         }
     }
 
+    private registerPayload(req:Request):IUser{
+        let payload = req.body;
+        const user = new IUser();
+        user.full_name = payload.full_name;
+        user.customer_id = payload.customer_id;
+        user.email = payload.email;
+        user.password = payload.password;
+        user.remember_token = uuid();
+
+        return user;
+    }
+
+    private sendRegistrationEmail(email:string, token?:string):void{
+        const text = EmailTemplate.register(token);
+        const emailParam:EmailType = {
+            to :email,
+            subject: "Pendaftaran",
+            from: Config.email_from,
+            text:text
+        }
+        
+        const emailService = new EmailService();
+        emailService.sendNewEmail(emailParam)
+    }
+
     async register(req:Request, res:Response, next:NextFunction):Promise<any>{
         try {
-            let payload = req.body;
-            
-            const user = new IUser();
-            user.full_name = payload.full_name;
-            user.customer_id = payload.customer_id;
-            user.email = payload.email;
-            user.password = payload.password;
+            const user = this.registerPayload(req);
             const result = await this.repository.save(user);
-            
-            const emailParam:EmailType = {
-                to :user.email,
-                subject:"Pendaftaran",
-                from:"hehe@gmail.cc",
-                text:"pendaftaran"
-            }
-            
-            const emailService = new EmailService();
-            emailService.sendNewEmail(emailParam)
-            
-            // const email = new Email();
-            // email.to = "lazer.helmi@gmail.com";
-            // email.subject = "hehehe";
-            // email.from = "20m.helmi@gmail.com";
-            // email.text = "dasmndsandmasndlnasldnsadjnsa";
-
-            // console.log(email);
-
+            this.sendRegistrationEmail(user.email, user.remember_token);
             return res.status(201).json({
                 data : result,
                 message : 'Created'
@@ -78,8 +82,6 @@ export class AuthController extends Controller {
             user.full_name = payload.full_name;
             user.email = payload.email;
             user.password = payload.password;
-            
-            console.log(id);
             const result = await this.repository.update(user, id);
             
             return res.status(200).json({
@@ -93,11 +95,11 @@ export class AuthController extends Controller {
     }
 
     async get(req:Request, res:Response, next:NextFunction):Promise<any>{
+        
         try {
             (new Policy(req.user, 'read', 'User').checkAbillities());
-            const email = req.user?.email;
-
-            const user = await this.repository.get(email);
+            const id = req.user?._id;
+            const user = await this.repository.get(id);
 
             res.status(200).json({
                 data : user,
@@ -136,6 +138,18 @@ export class AuthController extends Controller {
             });
         } catch (error) {
             next(error);
+        }
+    }
+
+    async updateEmailVerify(req:Request, res:Response, next:NextFunction):Promise<any>{
+        try {
+            const { remember_token } = req.body;
+            const userAccount = await this.repository.get(req.params.id)
+            const user = new IUser();
+            user.remember_token = remember_token;
+
+        } catch (error) {
+            
         }
     }
 }

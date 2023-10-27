@@ -1,7 +1,7 @@
-import { web } from "./app/Web";
+import { web } from "./app/web";
 import { logger } from "./app/Logger";
-import  config from './config/Config';
+import Config from "./config/Config";
 
-web.listen(config.serverPort, () => {
+web.listen(Config.serverPort, () => {
     logger.info("app start");
 });
